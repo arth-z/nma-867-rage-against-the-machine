@@ -1,3 +1,5 @@
+using Unity.VisualScripting;
+using Unity.VisualScripting.ReorderableList;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,6 +9,7 @@ public class PlayerInteract : MonoBehaviour
 
     InputAction lookAction;
     InputAction moveAction;
+    InputAction clickAction;
 
     public float sens = 0.2f;
     public float speed = 20f;
@@ -17,8 +20,13 @@ public class PlayerInteract : MonoBehaviour
 
     void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         lookAction = InputSystem.actions.FindAction("Look");
         moveAction = InputSystem.actions.FindAction("Move");
+        clickAction = InputSystem.actions.FindAction("Click");
+        clickAction.performed += ctx => clicked();
     }
 
     void Move()
@@ -43,29 +51,42 @@ public class PlayerInteract : MonoBehaviour
     {
         Vector2 lookValue = lookAction.ReadValue<Vector2>();
 
-        h += lookValue.y * sens;
-        v += lookValue.x * sens;
+        h += lookValue.x * sens;
+        v += lookValue.y * sens;
 
         // Clamp pitch to avoid issues and sign flips at +/- 90
         v = Mathf.Clamp(v, -89, 89);
 
 
         // spherical coordinates because euler rotations cause some weeeeeird stuff
-        var phi = h * Mathf.Deg2Rad;
-        var theta = v * Mathf.Deg2Rad;
+        var theta = h * Mathf.Deg2Rad;
+        var phi = v * Mathf.Deg2Rad;
 
         var sinTheta = Mathf.Sin(theta);
         var cosTheta = Mathf.Cos(theta);
         var sinPhi = Mathf.Sin(phi);
         var cosPhi = Mathf.Cos(phi);
 
-        // Convert from spherical to cartesian and directly assign to up. Simple but requires clamping pitch
+        // Convert from spherical to cartesian and directly assign to up. 
         var fwd = new Vector3(cosPhi * sinTheta, sinPhi, cosPhi * cosTheta);
         transform.forward = fwd;
 
-        // Alternatively, if you want pitch to be able to exceed 90/-90 without freaking out, remove the above transform.forward call and calculate the spherical up vector directly
         var up = new Vector3(-sinPhi * sinTheta, cosPhi, -sinPhi * cosTheta);
         transform.rotation = Quaternion.LookRotation(fwd, up);
+    }
+    private void clicked()
+    {
+        Vector3 fwd = transform.forward;
+        RaycastHit hitInfo;
+        
+        if (Physics.Raycast(transform.position, fwd, out hitInfo, 200))
+        {
+            if (hitInfo.collider.GetComponent<KeyboardKey>())
+            {
+                hitInfo.collider.GetComponent<KeyboardKey>().press();
+            }
+        }
+
     }
 
     private void Update()
