@@ -2,4 +2,4 @@
 
 So what if a typing game, but it was the worst thing you ever played and you could literally only type like 13 words in 6 minutes?
 
-https://drive.google.com/file/d/1RdBLLX8hntWYbkKJnOuSejCYGrowamqj/view?usp=sharing - video demo
+https://drive.google.com/file/d/1PrrviNkBTaczPd75WkY83xeNJSC_vfb2/view?usp=sharing - video demo
