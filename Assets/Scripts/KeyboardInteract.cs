@@ -29,6 +29,7 @@ public class KeyboardInteract : MonoBehaviour
 
     int stickyKeysCounter = 0;
     float stickyKeysTimer = 0f;
+    bool stickyKeysActive = false;
 
     int wordsCleared = 0;
     bool shiftActive = false;
@@ -85,6 +86,10 @@ public class KeyboardInteract : MonoBehaviour
         {
             letter = letter.ToLower();
         }
+        if (shiftActive && stickyKeysActive)
+        {
+            shiftActive = !shiftActive;
+        }
         currentInput += letter;
         print("Current Input: " + currentInput);
     }
@@ -104,13 +109,16 @@ public class KeyboardInteract : MonoBehaviour
     public void shift()
     {
         playKeySFX();
+        if (stickyKeysActive)
+        {
+            shiftActive = !shiftActive;
+        }
         stickyKeysCounter++;
         if (stickyKeysCounter == 5)
         {
-            shiftActive = !shiftActive;
             playStickyKeySFX();
             stickyKeysCounter = 0;
-            print("Shift toggled to " + shiftActive);
+            stickyKeysActive = !stickyKeysActive;
         }
     }
 
