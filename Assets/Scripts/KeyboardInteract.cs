@@ -119,6 +119,7 @@ public class KeyboardInteract : MonoBehaviour
             playStickyKeySFX();
             stickyKeysCounter = 0;
             stickyKeysActive = !stickyKeysActive;
+            shiftActive = !shiftActive;
         }
     }
 
